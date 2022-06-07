@@ -41,12 +41,6 @@ function createPlayerBoard() {
             cell.id = 'cell_' + (i * width + j);
             cell.innerHTML = (i * width + j);
             cell.className = "water";
-            cell.onmouseenter = function () {
-                //hoverMany(extractCellNumber(this), 4, "H");
-            };
-            cell.onmouseleave = function () {
-                //unhoverMany(extractCellNumber(this), 4, "H");
-            };
             row.append(cell);
         }
         table.append(row);
@@ -122,21 +116,6 @@ function extractCellNumber(cell) {
 
 function badRequest() {
     new Audio('audio/alert.wav').play();
-}
-
-function hoverMany(startId, cellsCount, direction) {//todo make direction
-    var id = "cell_" + startId;
-    for (var i = 0; i < cellsCount; i++) {
-        document.getElementById("cell_" + (parseInt(startId) + i)).className = 'intact';
-    }
-}
-
-function unhoverMany(startId, cellsCount, direction) {//todo make direction
-    var id = "cell_" + startId;
-    for (var i = 0; i < cellsCount; i++) {
-        var number = startId + i;
-        document.getElementById("cell_" + (parseInt(startId) + i)).className = 'water';
-    }
 }
 
 function winner() {
@@ -235,11 +214,9 @@ function processConnectMessage(response) {
     if (sessionId == response.playerOneSessionId) {
         response.playerOneShipPositions.forEach(el => document.getElementById("cell_" + el).innerHTML = "&#128755;");
         document.getElementById("name").innerHTML = response.playerOneName;
-        console.log(response.playerOneName);
     } else {
         response.playerTwoShipPositions.forEach(el => document.getElementById("cell_" + el).innerHTML = "&#128755;");
         document.getElementById("name").innerHTML = response.playerTwoName;
-        console.log(response.playerTwoName);
     }
 
     highlightBoard(myTurn);
@@ -262,12 +239,11 @@ function processGameplayMessage(response) {
         return;
     }
 
-    var cellArray = response.cells;
+    var cellArray = response.cells.cells;
     var keys = Object.keys(cellArray);
-
     if (keys.length > 1) {
         handleShipShink(cellArray, keys, lastShootingPlayer == sessionId);
-        logSunkedShip(response.shipCells, response.currentTurnPlayerName);
+        logSunkedShip(response.shipCells.shipCells, response.currentTurnPlayerName);
     } else {
         handleReturnedFieldType(cellArray[keys[0]], keys[0], lastShootingPlayer == sessionId);
         logMove(cellArray[keys[0]], response.currentTurnPlayerName, keys[0]);
