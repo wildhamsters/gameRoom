@@ -1,7 +1,7 @@
 package org.wildhamsters.gameroom;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
@@ -10,7 +10,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.security.Principal;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Mariusz Bal
@@ -27,8 +28,12 @@ class WebSocketController {
         }
 
         @MessageMapping("/room")
-        public void sendSpecific(@Payload Message<String> msg, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
-                ConnectionStatus connectionStatus = gameService.processConnectingPlayers(new ConnectedPlayer(sessionId, sessionId));
+        public void sendSpecific(@Payload Message<String> msg, Principal user,
+                        @Header("simpSessionId") String sessionId)
+                        throws JsonProcessingException {
+
+                ConnectionStatus connectionStatus = gameService.processConnectingPlayers(
+                                new ConnectedPlayer(user.getName(), sessionId));
 
                 String resultJSON = new ObjectMapper().writeValueAsString(connectionStatus);
                 simpMessagingTemplate.convertAndSendToUser(connectionStatus.playerOneSessionId(),
@@ -39,12 +44,13 @@ class WebSocketController {
         }
 
         @MessageMapping("/gameplay")
-        public void sendGameplay(String json, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
+        public void sendGameplay(String json, @Header("simpSessionId") String sessionId)
+                        throws JsonProcessingException {
                 GameplayUserShotData data = new ObjectMapper().readValue(json, GameplayUserShotData.class);
                 Result result = gameService.shoot(data.roomId(), data.cell());
 
                 String resultJSON = new ObjectMapper().writeValueAsString(result);
-                
+
                 simpMessagingTemplate.convertAndSendToUser(result.currentTurnPlayer(),
                                 "/queue/specific-user", resultJSON);
                 simpMessagingTemplate.convertAndSendToUser(result.opponent(),
