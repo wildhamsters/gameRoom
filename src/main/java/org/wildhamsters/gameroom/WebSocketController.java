@@ -27,10 +27,8 @@ class WebSocketController {
         }
 
         @MessageMapping("/room")
-        public void sendSpecific(@Payload Message<String> msg, Principal user,
-                        @Header("simpSessionId") String sessionId) throws JsonProcessingException {
-                ConnectionStatus connectionStatus = gameService
-                                .processConnectingPlayers(new ConnectedPlayer(user.getName(), sessionId));
+        public void sendSpecific(@Payload Message<String> msg, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
+                ConnectionStatus connectionStatus = gameService.processConnectingPlayers(new ConnectedPlayer(sessionId, sessionId));
 
                 String resultJSON = new ObjectMapper().writeValueAsString(connectionStatus);
                 simpMessagingTemplate.convertAndSendToUser(connectionStatus.playerOneSessionId(),
@@ -41,12 +39,12 @@ class WebSocketController {
         }
 
         @MessageMapping("/gameplay")
-        public void sendGameplay(String json, Principal user,
-                        @Header("simpSessionId") String sessionId) throws JsonProcessingException {
+        public void sendGameplay(String json, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
                 GameplayUserShotData data = new ObjectMapper().readValue(json, GameplayUserShotData.class);
                 Result result = gameService.shoot(data.roomId(), data.cell());
 
                 String resultJSON = new ObjectMapper().writeValueAsString(result);
+                
                 simpMessagingTemplate.convertAndSendToUser(result.currentTurnPlayer(),
                                 "/queue/specific-user", resultJSON);
                 simpMessagingTemplate.convertAndSendToUser(result.opponent(),
@@ -54,8 +52,7 @@ class WebSocketController {
         }
 
         @MessageMapping("/gameplay/surrender")
-        public void giveUp(String json, Principal user,
-                        @Header("simpSessionId") String sessionId) throws JsonProcessingException {
+        public void giveUp(String json, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
                 GameplayUserShotData data = new ObjectMapper().readValue(json, GameplayUserShotData.class);
                 SurrenderResult result = gameService.surrender(data.roomId(), sessionId);
 

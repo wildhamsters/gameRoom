@@ -7,8 +7,6 @@ import org.wildhamsters.gameroom.play.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO refactor this class
-
 /**
  * Main entry point to the game.
  * Manages connection of players and handles interactions between players and a
@@ -25,15 +23,13 @@ class GameService {
 
     private final GameRooms gameRooms = new GameRooms();
     private final GameConfigurer gameConfigurer;
-    private final MatchStatisticsRepository matchStatisticsRepository;
     private GameRoom gameRoom;
     private ConnectedPlayers connectedPlayers;
 
-    GameService(MatchStatisticsRepository matchStatisticsRepository) {
+    GameService() {
         this.gameRoom = null;
         this.connectedPlayers = new ConnectedPlayers(new ArrayList<>());
         this.gameConfigurer = new GameConfigurer("https://protected-stream-19238.herokuapp.com/placeShips");
-        this.matchStatisticsRepository = matchStatisticsRepository;
     }
 
     /**
@@ -78,7 +74,6 @@ class GameService {
                 BOARD_HEIGHT, BOARD_WIDTH, connectedPlayers.names(), connectedPlayers.ids());
         this.gameRoom = new GameRoom(gameSettings);
         var roomId = gameRooms.addRoom(gameRoom);
-        // TODO refactor Optionals
         var connectionStatus = new ConnectionStatus("Players paired.",
                 roomId,
                 connectedPlayers.firstOneConnected().sessionId(),
@@ -116,14 +111,11 @@ class GameService {
         }
     }
 
-    List<MatchStatisticsEntity> findAllStatistics() {
-        var stats = new ArrayList<MatchStatisticsEntity>();
-        matchStatisticsRepository.findAll().forEach(stats::add);
-        return stats;
+    List<Integer> findAllStatistics() {
+        return null;
     }
 
     private void saveMatchStatistics(String roomId) {
-        matchStatisticsRepository.save(
-                new MatchStatisticsEntityMapper().map(gameRooms.findRoom(roomId).getMatchStatistics()));
+
     }
 }

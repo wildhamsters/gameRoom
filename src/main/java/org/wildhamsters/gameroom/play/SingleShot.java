@@ -1,21 +1,23 @@
 package org.wildhamsters.gameroom.play;
 
 import java.util.List;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.wildhamsters.gameroom.Cells;
 import org.wildhamsters.gameroom.Event;
 import org.wildhamsters.gameroom.Result;
+import org.wildhamsters.gameroom.ShipCells;
 import org.wildhamsters.gameroom.board.FieldState;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
- * Contains both players. Indicate which is current (making shot) and which is
- * enemy (fire upon).
+ * Contains both players. Indicate which is current (making shot) and which is enemy (fire upon).
  * Players are changed if current player missed.
  *
  * @author Piotr Chowaniec
  */
-@SuppressFBWarnings(value = "NP_NULL_PARAM_DEREF", justification = "Can't fix that for now")
+@SuppressFBWarnings(
+        value = "NP_NULL_PARAM_DEREF",
+        justification = "Can't fix that for now"
+)
 class SingleShot {
 
     private final MatchStatistics matchStatistics;
@@ -51,14 +53,14 @@ class SingleShot {
             error = e.getMessage();
         }
         var fieldsToMark = enemy.takeShot(position, state);
+
         matchStatistics.update(state);
 
         List<Integer> shipCells = (fieldsToMark.size() > 1) ? enemy.getSunkShipPositions(position) : null;
 
         switchPlayers(state);
 
-        return new Result(Event.GAMEPLAY, fieldsToMark, shipCells, isWinner(), error, current.getId(),
-                current.getName(), enemy.getId());
+        return new Result(Event.GAMEPLAY, new Cells(fieldsToMark), new ShipCells(shipCells), isWinner(), error, current.getId(), current.getName(), enemy.getId());
     }
 
     private void switchPlayers(FieldState state) {
