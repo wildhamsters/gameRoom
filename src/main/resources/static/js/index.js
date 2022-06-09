@@ -138,6 +138,7 @@ function changeGiveUpButtonToMenu() {
     let giveUpButton =  document.getElementById("giveUp")
     giveUpButton.innerText="MENU";
     giveUpButton.onclick=function() {window.location.replace("/welcome")};
+    /////////////////////////////////
 }
 
 function changeDOMClassName(elementId, className) {
@@ -204,7 +205,6 @@ var currentTurnPlayer;
 
 function processConnectMessage(response) {
     roomId=response.roomId;
-    //document.getElementById("playerSpan").innerText=(response.startingPlayerName + " starts");
     splitPlayerSpan(response.startingPlayerName + " starts");
     var myTurn = (sessionId==response.playerOneSessionId);
 
@@ -251,7 +251,6 @@ function processGameplayMessage(response) {
 
     lastShootingPlayer = response.currentTurnPlayer;
     currentTurnPlayer = response.currentTurnPlayer;
-    //document.getElementById("playerSpan").innerHTML = "Now plays: " + response.currentTurnPlayerName;
     splitPlayerSpan("Now plays: " + response.currentTurnPlayerName);
 
 
@@ -273,7 +272,6 @@ function processSurrenderMessage(response) {
         winner();
         alert(response.winnerMessage);
     }
-    //setTimeout(() => { window.location.href='/logout' }, 3000)
 }
 
 function highlightBoard(currentPlayerTurn) {

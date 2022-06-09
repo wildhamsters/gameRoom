@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class GameRoomController {
 
-    // @GetMapping
-    // String firstEndpoint() {
-    //     return "index.html";
-    // }
+    @GetMapping
+    String firstEndpoint() {
+        return "index.html";
+    }
 
-    @GetMapping("/placeShips")
-    String placeShips(@RequestParam(name = "height", required = false, defaultValue = "10") int height,
-            @RequestParam(name = "width", required = false, defaultValue = "10") int width) {
-        System.out.println(height + " " + width);
-        return "register.html";
+    @GetMapping("/gameroom")
+    String placeShips(@RequestParam(name = "userName", required = false, defaultValue = "defaultUser") String userName,
+            @RequestParam(name = "sessionId", required = false, defaultValue = "defaultSession") String sessionId) {
+        System.out.println(userName + " " + sessionId);
+        return "game.html";
     }
 }
