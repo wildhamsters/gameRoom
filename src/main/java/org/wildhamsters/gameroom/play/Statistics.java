@@ -1,6 +1,5 @@
 package org.wildhamsters.gameroom.play;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -13,12 +12,8 @@ public class Statistics {
     private final GameRooms gameRooms = new GameRooms();
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${url.statistics}")
-    private String statisticsUrl;
-
-    public void saveMatchStatistics(String roomId) {
-        CurrentMatchStatistics current =
-                new CurrentMatchStatisticsMapper().map(gameRooms.findRoom(roomId).getMatchStatistics());
-        restTemplate.postForObject(statisticsUrl, current, CurrentMatchStatistics.class);
+    public void saveMatchStatistics(GameRoom gameRoom) {
+        var current = new CurrentMatchStatisticsMapper().map(gameRoom.getMatchStatistics());
+        restTemplate.postForObject("http://localhost:5500/", current, CurrentMatchStatistics.class);
     }
 }

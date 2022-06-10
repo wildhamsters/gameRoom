@@ -59,9 +59,10 @@ class GameService {
      * @return result of the shot.
      */
     Result shoot(String roomId, int position) {
-        Result result = gameRooms.findRoom(roomId).makeShot(position);
+        var gameRoom = gameRooms.findRoom(roomId);
+        var result = gameRoom.makeShot(position);
         if (result.finished()) {
-            statistics.saveMatchStatistics(roomId);
+            statistics.saveMatchStatistics(gameRoom);
         }
         return result;
     }
@@ -107,8 +108,9 @@ class GameService {
         String surrenderMessage = "You gave up.";
         String winnerMessage = "The opponent gave up. You won!";
         try {
-            var winnerSessionId = gameRooms.findRoom(roomId).findSurrenderPlayerOpponent(surrenderPlayerSessionId);
-            statistics.saveMatchStatistics(roomId);
+            var gameRoom = gameRooms.findRoom(roomId);
+            var winnerSessionId = gameRoom.findSurrenderPlayerOpponent(surrenderPlayerSessionId);
+            statistics.saveMatchStatistics(gameRoom);
             return new SurrenderResult(Event.SURRENDER, surrenderPlayerSessionId, winnerSessionId,
                     surrenderMessage, winnerMessage);
         } catch (IllegalArgumentException e) {
