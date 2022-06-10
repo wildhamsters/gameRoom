@@ -1,10 +1,5 @@
 package org.wildhamsters.gameroom;
 
-import java.util.List;
-import java.util.Map;
-
-import org.wildhamsters.gameroom.board.FieldState;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -12,10 +7,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Mariusz Bal
  */
+
+@ExcludeFromJacocoGeneratedReport
 @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Can't fix that for now")
 public record Result(Event event,
-                Map<Integer, FieldState> cells,
-                List<Integer> shipCells,
+                Cells cells,
+                ShipCells shipCells,
                 Boolean finished,
                 String error,
                 String currentTurnPlayer,
