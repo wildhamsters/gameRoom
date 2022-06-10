@@ -1,10 +1,9 @@
 package org.wildhamsters.gameroom.play;
 
-import java.time.LocalDateTime;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.wildhamsters.gameroom.board.FieldState;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.time.LocalDateTime;
 
 /**
  * Gathers data about single match like match id, total number of accurate
@@ -14,7 +13,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Piotr Chowaniec
  */
 @SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Can't fix that for now")
-public class MatchStatistics {
+class MatchStatistics {
 
     private final String matchId;
     private final LocalDateTime startTime;
