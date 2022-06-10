@@ -32,8 +32,8 @@ public class GameRoomController {
         }
 
         boolean check(String name, String session) {
-            if(name.equals("defaultUser") && session.equals("defaultSession"))
-                return false;
+            // if(name.equals("defaultUser") && session.equals("defaultSession"))
+            //     return false;
             return true;
         }
     };

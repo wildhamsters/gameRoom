@@ -1,5 +1,6 @@
 package org.wildhamsters.gameroom;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.wildhamsters.gameroom.configuration.GameConfigurer;
 import org.wildhamsters.gameroom.play.*;
@@ -26,10 +27,14 @@ class GameService {
     private GameRoom gameRoom;
     private ConnectedPlayers connectedPlayers;
 
+ 
+
     GameService() {
         this.gameRoom = null;
         this.connectedPlayers = new ConnectedPlayers(new ArrayList<>());
-        this.gameConfigurer = new GameConfigurer("https://protected-stream-19238.herokuapp.com/placeShips");
+        this.gameConfigurer = new GameConfigurer("http://shipplacement:7000/placeShips");
+            // "http://localhost:7000/placeShips");
+            // "https://protected-stream-19238.herokuapp.com/placeShips");
     }
 
     /**
