@@ -1,9 +1,10 @@
 package org.wildhamsters.gameroom;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.wildhamsters.gameroom.configuration.GameConfigurer;
-import org.wildhamsters.gameroom.play.*;
+import org.wildhamsters.gameroom.play.GameRoom;
+import org.wildhamsters.gameroom.play.GameRooms;
+import org.wildhamsters.gameroom.play.Statistics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +25,17 @@ class GameService {
 
     private final GameRooms gameRooms = new GameRooms();
     private final GameConfigurer gameConfigurer;
+    private final Statistics statistics;
     private GameRoom gameRoom;
     private ConnectedPlayers connectedPlayers;
-
- 
 
     GameService() {
         this.gameRoom = null;
         this.connectedPlayers = new ConnectedPlayers(new ArrayList<>());
-        this.gameConfigurer = new GameConfigurer("http://shipplacement:7000/placeShips");
-            // "http://localhost:7000/placeShips");
-            // "https://protected-stream-19238.herokuapp.com/placeShips");
+//        this.gameConfigurer = new GameConfigurer("http://shipplacement:7000/placeShips");
+        this.gameConfigurer = new GameConfigurer("http://localhost:7000/placeShips");
+        // "https://protected-stream-19238.herokuapp.com/placeShips");
+        this.statistics = new Statistics();
     }
 
     /**
@@ -60,7 +61,7 @@ class GameService {
     Result shoot(String roomId, int position) {
         Result result = gameRooms.findRoom(roomId).makeShot(position);
         if (result.finished()) {
-            saveMatchStatistics(roomId);
+            statistics.saveMatchStatistics(roomId);
         }
         return result;
     }
@@ -107,20 +108,12 @@ class GameService {
         String winnerMessage = "The opponent gave up. You won!";
         try {
             var winnerSessionId = gameRooms.findRoom(roomId).findSurrenderPlayerOpponent(surrenderPlayerSessionId);
-            saveMatchStatistics(roomId);
+            statistics.saveMatchStatistics(roomId);
             return new SurrenderResult(Event.SURRENDER, surrenderPlayerSessionId, winnerSessionId,
                     surrenderMessage, winnerMessage);
         } catch (IllegalArgumentException e) {
             return new SurrenderResult(Event.SURRENDER, surrenderPlayerSessionId, null,
                     surrenderMessage, winnerMessage);
         }
-    }
-
-    List<Integer> findAllStatistics() {
-        return null;
-    }
-
-    private void saveMatchStatistics(String roomId) {
-
     }
 }
