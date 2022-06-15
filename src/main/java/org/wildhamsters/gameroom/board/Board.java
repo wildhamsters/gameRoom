@@ -2,8 +2,6 @@ package org.wildhamsters.gameroom.board;
 
 import org.wildhamsters.gameroom.fleet.ShipsPositions;
 
-//TODO whole content of the package should be probably moved to play and refactored
-
 /**
  * @author Dominik Żebracki
  */

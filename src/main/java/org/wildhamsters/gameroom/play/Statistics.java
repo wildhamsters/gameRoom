@@ -14,6 +14,6 @@ public class Statistics {
 
     public void saveMatchStatistics(GameRoom gameRoom) {
         var current = new CurrentMatchStatisticsMapper().map(gameRoom.getMatchStatistics());
-        restTemplate.postForObject("http://localhost:5500/", current, CurrentMatchStatistics.class);
+        restTemplate.postForObject("http://stats:5500/", current, CurrentMatchStatistics.class);
     }
 }
