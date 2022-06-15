@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class Statistics {
 
-    private final GameRooms gameRooms = new GameRooms();
+    // private final GameRooms gameRooms = new GameRooms();
     private final RestTemplate restTemplate = new RestTemplate();
 
     public void saveMatchStatistics(GameRoom gameRoom) {
