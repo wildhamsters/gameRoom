@@ -31,8 +31,8 @@ public class GameRoomController {
         }
 
         boolean check(String name, String session) {
-            String redisName = GameRoomApplication.JEDIS.get(session);
-            return redisName != null && redisName.equals(name);
+            String userSession = GameRoomApplication.JEDIS.get(name);
+            return userSession != null && userSession.equals(session);
         }
     };
 

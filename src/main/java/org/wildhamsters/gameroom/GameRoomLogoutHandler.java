@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GameRoomLogoutHandler implements LogoutHandler {
-
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) {
+            System.out.println(request.getMethod());
             String userName = authentication.getName();
+            System.out.println(userName);
             long res = GameRoomApplication.JEDIS.del(userName);
             if(res == 0) {
                 System.out.println("User not found");

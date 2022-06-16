@@ -11,14 +11,14 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 
 class GameRoomSuccessLogoutHandler extends
         SimpleUrlLogoutSuccessHandler{
-
+    //maybe be used in futer, dunno, leave it for now
     @Override
     public void onLogoutSuccess(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication)
-            throws IOException, ServletException {
+            HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+                throws IOException, ServletException {
+            System.out.println(request.getMethod());
             String userName = authentication.getName();
+            System.out.println(userName);
             long res = GameRoomApplication.JEDIS.del(userName);
             if(res == 0) {
                 System.out.println("User not found");
