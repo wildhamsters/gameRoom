@@ -137,8 +137,7 @@ function lose() {
 function changeGiveUpButtonToMenu() {
     let giveUpButton =  document.getElementById("giveUp")
     giveUpButton.innerText="MENU";
-    giveUpButton.onclick=function() {window.location.replace("/welcome")};
-    /////////////////////////////////
+    giveUpButton.onclick=function() {window.location.replace("http://localhost:5000/login")};
 }
 
 function changeDOMClassName(elementId, className) {

@@ -1,5 +1,6 @@
 package org.wildhamsters.gameroom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings(value = "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", justification = "Can't fix that for now")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private GameRoomLogoutHandler logoutHandler;
     final private UserDetailsService userDetailsService;
     final private PasswordEncoder passwordEncoder;
 
@@ -35,6 +38,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity security) throws Exception {
-        security.httpBasic().disable();
+        security.httpBasic().disable()
+                .logout()
+                .addLogoutHandler(logoutHandler)
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(new GameRoomSuccessLogoutHandler());
     }
 }
