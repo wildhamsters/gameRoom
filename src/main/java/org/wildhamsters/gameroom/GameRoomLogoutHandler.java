@@ -23,5 +23,6 @@ public class GameRoomLogoutHandler implements LogoutHandler {
             } else {
                 System.out.println("Something strange happened " + res);
             }
+            
     }
 }

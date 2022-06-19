@@ -38,12 +38,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity security) throws Exception {
-        security.csrf().disable().logout()
-                .logoutUrl("/logout").addLogoutHandler(logoutHandler)
-                .logoutSuccessUrl("http://localhost:5000/")
-                .and().formLogin()
-                .and()
-                .httpBasic().disable();
-                // .logoutSuccessHandler(new GameRoomSuccessLogoutHandler())
+        // security.csrf().disable().logout()
+        // .logoutUrl("/logout").addLogoutHandler(logoutHandler)
+        // .logoutSuccessUrl("http://localhost:5000/")
+        // .and().formLogin()
+        // .and()
+        // .httpBasic().disable();
+        // .logoutSuccessHandler(new GameRoomSuccessLogoutHandler())
+        security.httpBasic().disable();
     }
 }
