@@ -20,8 +20,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings(value = "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION", justification = "Can't fix that for now")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private GameRoomLogoutHandler logoutHandler;
     final private UserDetailsService userDetailsService;
     final private PasswordEncoder passwordEncoder;
 
@@ -38,13 +36,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity security) throws Exception {
-        // security.csrf().disable().logout()
-        // .logoutUrl("/logout").addLogoutHandler(logoutHandler)
-        // .logoutSuccessUrl("http://localhost:5000/")
-        // .and().formLogin()
-        // .and()
-        // .httpBasic().disable();
-        // .logoutSuccessHandler(new GameRoomSuccessLogoutHandler())
         security.httpBasic().disable();
     }
 }

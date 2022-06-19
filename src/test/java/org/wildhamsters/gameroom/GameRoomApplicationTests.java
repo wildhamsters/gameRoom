@@ -8,6 +8,7 @@ class GameRoomApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// checks if spring boot loads correctly
 	}
 
 }

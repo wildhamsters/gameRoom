@@ -7,7 +7,7 @@ import redis.clients.jedis.Jedis;
 
 @SpringBootApplication
 public class GameRoomApplication {
-	public static Jedis JEDIS = new Jedis("redis", 6379);
+	public final static Jedis JEDIS = new Jedis("redis", 6379);
 
 	public static void main(String[] args) {
 		SpringApplication.run(GameRoomApplication.class, args);
