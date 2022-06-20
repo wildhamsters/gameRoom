@@ -13,10 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import org.wildhamsters.gameroom.play.GameRoom;
 
 @Controller
 public class GameRoomController {
@@ -55,9 +53,8 @@ public class GameRoomController {
         UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(userName, sessionId);
         Authentication authenticatedUser = authManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-        System.out.println(sessionId + " User: " + userName);
+        System.out.println(String.format("%s authenticating user %s",sessionId, userName));
         String s = GameRoomApplication.JEDIS.get(userName);
-        System.out.println(s + " User: " + userName);
         if (authenticatedUser.isAuthenticated())
             return "game.html";
         else
