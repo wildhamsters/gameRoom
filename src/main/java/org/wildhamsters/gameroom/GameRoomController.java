@@ -13,10 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import org.wildhamsters.gameroom.play.GameRoom;
 
 @Controller
 public class GameRoomController {
@@ -28,6 +26,7 @@ public class GameRoomController {
             String session = authentication.getCredentials().toString();
 
             if (check(name, session)) {
+                
                 return new UsernamePasswordAuthenticationToken(
                         name, session, new ArrayList<>());
             } else {
@@ -55,9 +54,7 @@ public class GameRoomController {
         UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(userName, sessionId);
         Authentication authenticatedUser = authManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-        System.out.println(sessionId + " User: " + userName);
-        String s = GameRoomApplication.JEDIS.get(userName);
-        System.out.println(s + " User: " + userName);
+        System.out.println(String.format("%s authenticating user %s",sessionId, userName));
         if (authenticatedUser.isAuthenticated())
             return "game.html";
         else
@@ -69,6 +66,6 @@ public class GameRoomController {
         String session = GameRoomApplication.JEDIS.get(user.getName());
         attributes.addAttribute("userName", user.getName());
         attributes.addAttribute("sessionId", session);
-        return new RedirectView("http://localhost:5000/menu");
+        return new RedirectView("http://64.225.104.111:5000/menu");
     }
 }
