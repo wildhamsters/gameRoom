@@ -15,9 +15,6 @@ class MessageListener {
 
     @RabbitListener(queues = RabbitMQConfig.RESPONSE_QUEUE)
     void listener(PositionsDTO response) {
-        if (response != null) {
-            System.out.println("Response received.");
-        }
         gameService.createTwoPlayersConnectedStatus(response);
     }
 }

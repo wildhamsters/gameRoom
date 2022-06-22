@@ -21,12 +21,12 @@ import java.util.Map;
 @Controller
 class WebSocketController {
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
     private final GameService gameService;
     private static Map<String, Boolean> roomSurrenderFix = new HashMap<>();
     private final RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     WebSocketController(GameService gameService, RabbitTemplate rabbitTemplate) {
         this.gameService = gameService;
@@ -37,6 +37,8 @@ class WebSocketController {
     public void sendSpecific(@Payload Message<String> msg, Principal user,
                              @Header("simpSessionId") String sessionId) throws JsonProcessingException {
         ConnectionStatus connectionStatus;
+
+
         gameService.addPlayer(new ConnectedPlayer(user.getName(), sessionId));
         if (gameService.areTwoPlayersConnected()) {
             rabbitTemplate.convertAndSend(RabbitMQConfig.MESSAGE_EXCHANGE, RabbitMQConfig.ROUTING_KEY,
@@ -44,14 +46,17 @@ class WebSocketController {
             connectionStatus = gameService.getConnectionStatus();
         } else {
             connectionStatus = gameService.createPlayerWaitingForOpponentStatus();
+
+
         }
         String resultJSON = new ObjectMapper().writeValueAsString(connectionStatus);
         simpMessagingTemplate.convertAndSendToUser(connectionStatus.playerOneSessionId(),
                 "/queue/specific-user", resultJSON);
-        if (connectionStatus.playerTwoSessionId() != null)
+        if (connectionStatus.playerTwoSessionId() != null) {
             simpMessagingTemplate.convertAndSendToUser(connectionStatus.playerTwoSessionId(),
                     "/queue/specific-user", resultJSON);
-
+            roomSurrenderFix.put(connectionStatus.roomId(), false);
+        }
     }
 
     @MessageMapping("/gameplay")
@@ -61,22 +66,20 @@ class WebSocketController {
         Result result = gameService.shoot(data.roomId(), data.cell());
 
         String resultJSON = new ObjectMapper().writeValueAsString(result);
-
-        simpMessagingTemplate.convertAndSendToUser(result.currentTurnPlayer(),
-                "/queue/specific-user", resultJSON);
-        simpMessagingTemplate.convertAndSendToUser(result.opponent(),
-                "/queue/specific-user", resultJSON);
     }
 
     @MessageMapping("/gameplay/surrender")
     public void giveUp(String json, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
         GameplayUserShotData data = new ObjectMapper().readValue(json, GameplayUserShotData.class);
-        SurrenderResult result = gameService.surrender(data.roomId(), sessionId);
-
-        String resultJSON = new ObjectMapper().writeValueAsString(result);
-        simpMessagingTemplate.convertAndSendToUser(result.surrenderPlayerSessionId(),
-                "/queue/specific-user", resultJSON);
-        simpMessagingTemplate.convertAndSendToUser(result.winPlayerSessionId(),
-                "/queue/specific-user", resultJSON);
+        String roomId = data.roomId();
+        if (roomSurrenderFix.containsKey(roomId)) {
+            SurrenderResult result = gameService.surrender(roomId, sessionId);
+            String resultJSON = new ObjectMapper().writeValueAsString(result);
+            simpMessagingTemplate.convertAndSendToUser(result.surrenderPlayerSessionId(),
+                    "/queue/specific-user", resultJSON);
+            simpMessagingTemplate.convertAndSendToUser(result.winPlayerSessionId(),
+                    "/queue/specific-user", resultJSON);
+            roomSurrenderFix.remove(roomId);
+        }
     }
 }
