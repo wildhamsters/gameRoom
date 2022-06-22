@@ -26,6 +26,7 @@ public class GameRoomController {
             String session = authentication.getCredentials().toString();
 
             if (check(name, session)) {
+                
                 return new UsernamePasswordAuthenticationToken(
                         name, session, new ArrayList<>());
             } else {
@@ -54,7 +55,6 @@ public class GameRoomController {
         Authentication authenticatedUser = authManager.authenticate(loginToken);
         SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
         System.out.println(String.format("%s authenticating user %s",sessionId, userName));
-        String s = GameRoomApplication.JEDIS.get(userName);
         if (authenticatedUser.isAuthenticated())
             return "game.html";
         else
@@ -66,6 +66,6 @@ public class GameRoomController {
         String session = GameRoomApplication.JEDIS.get(user.getName());
         attributes.addAttribute("userName", user.getName());
         attributes.addAttribute("sessionId", session);
-        return new RedirectView("http://localhost:5000/menu");
+        return new RedirectView("http://64.225.104.111:5000/menu");
     }
 }

@@ -25,9 +25,9 @@ var EVENT = {
 };
 
 function hideTableText() {
-    if(width > 15 || height > 15) {
-        document.getElementById("playerBoard").style.fontSize="0.8vh";
-        document.getElementById("opponentBoard").style.fontSize="0.8vh";
+    if (width > 15 || height > 15) {
+        document.getElementById("playerBoard").style.fontSize = "0.8vh";
+        document.getElementById("opponentBoard").style.fontSize = "0.8vh";
     }
 }
 
@@ -119,9 +119,9 @@ function badRequest() {
 }
 
 function winner() {
-	new Audio('audio/win.wav').play();
-	let page = document.getElementById("page");
-	page.innerHTML = "<img src='https://c.tenor.com/D-pLzJqzkKcAAAAC/winner-wrestling.gif' alt='YOU WON!' />";
+    new Audio('audio/win.wav').play();
+    let page = document.getElementById("page");
+    page.innerHTML = "<img src='https://c.tenor.com/D-pLzJqzkKcAAAAC/winner-wrestling.gif' alt='YOU WON!' />";
     page.className = "centered";
     changeGiveUpButtonToMenu();
 }
@@ -131,13 +131,14 @@ function lose() {
     let page = document.getElementById("page");
     page.innerHTML = "<img src='https://media.giphy.com/media/l2Je3n9VXC8z3baTe/giphy.gif' alt='YOU LOST!' />";
     page.className = "centered";
+
     changeGiveUpButtonToMenu();
 }
 
 function changeGiveUpButtonToMenu() {
-    let giveUpButton =  document.getElementById("giveUp")
-    giveUpButton.innerText="Menu";
-    giveUpButton.onclick=function() {window.location.replace("http://localhost:8080/endgame")};
+    let giveUpButton = document.getElementById("giveUp")
+    giveUpButton.innerText = "Menu";
+    giveUpButton.onclick = function () { window.location.replace("http://64.225.104.111:8080/endgame") };
 }
 
 function changeDOMClassName(elementId, className) {
@@ -178,8 +179,8 @@ function disconnect() {
 }
 
 function sendName(id) {
-    if(sessionId==currentTurnPlayer)
-        stompClient.send("/app/gameplay", {}, JSON.stringify({"cell":id, "roomId":roomId}));
+    if (sessionId == currentTurnPlayer)
+        stompClient.send("/app/gameplay", {}, JSON.stringify({ "cell": id, "roomId": roomId }));
     else {
         showStatus("NOT YOUR TURN!")
         setTimeout(() => { hideStatus(); }, 1000)
@@ -194,7 +195,7 @@ function readSubscribed(message) {
             processConnectMessage(response);
     } else if (response.event == EVENT.GAMEPLAY) {
         processGameplayMessage(response)
-    } else if(response.event == EVENT.SURRENDER) {
+    } else if (response.event == EVENT.SURRENDER) {
         processSurrenderMessage(response);
     }
 }
@@ -203,9 +204,9 @@ var lastShootingPlayer;
 var currentTurnPlayer;
 
 function processConnectMessage(response) {
-    roomId=response.roomId;
+    roomId = response.roomId;
     splitPlayerSpan(response.startingPlayerName + " starts");
-    var myTurn = (sessionId==response.playerOneSessionId);
+    var myTurn = (sessionId == response.playerOneSessionId);
 
     lastShootingPlayer = response.playerOneSessionId;
     currentTurnPlayer = response.playerOneSessionId;
@@ -226,7 +227,7 @@ function splitPlayerSpan(text) {
     for (var i = 0; i < text.length; i++) {
         split += "<span style='--i:" + i + "'>" + text.charAt(i) + "</span>";
     }
-    document.getElementById("playerSpan").innerHTML=split;
+    document.getElementById("playerSpan").innerHTML = split;
 }
 
 function processGameplayMessage(response) {
@@ -334,10 +335,10 @@ function getTime() {
 function giveUp() {
     var confirmGiveUp = confirm("Are you sure? The opponent will win.");
     if (confirmGiveUp) {
-        stompClient.send("/app/gameplay/surrender", {}, JSON.stringify({"cell":-1, "roomId":roomId}));
+        stompClient.send("/app/gameplay/surrender", {}, JSON.stringify({ "cell": -1, "roomId": roomId }));
     }
 }
-
+window.alreadyWon = false;
 createPlayerBoard();
 createOpponentBoard();
 connectUsers();

@@ -1,6 +1,8 @@
 package org.wildhamsters.gameroom;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -19,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 class WebSocketController {
         private final GameService gameService;
-
+        private static Map<String, Boolean> roomSurrenderFix = new HashMap<>();
         @Autowired
         private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -38,9 +40,11 @@ class WebSocketController {
                 String resultJSON = new ObjectMapper().writeValueAsString(connectionStatus);
                 simpMessagingTemplate.convertAndSendToUser(connectionStatus.playerOneSessionId(),
                                 "/queue/specific-user", resultJSON);
-                if (connectionStatus.playerTwoSessionId() != null)
+                if (connectionStatus.playerTwoSessionId() != null) {
                         simpMessagingTemplate.convertAndSendToUser(connectionStatus.playerTwoSessionId(),
                                         "/queue/specific-user", resultJSON);
+                        roomSurrenderFix.put(connectionStatus.roomId(), false);
+                }
         }
 
         @MessageMapping("/gameplay")
@@ -60,12 +64,15 @@ class WebSocketController {
         @MessageMapping("/gameplay/surrender")
         public void giveUp(String json, @Header("simpSessionId") String sessionId) throws JsonProcessingException {
                 GameplayUserShotData data = new ObjectMapper().readValue(json, GameplayUserShotData.class);
-                SurrenderResult result = gameService.surrender(data.roomId(), sessionId);
-
-                String resultJSON = new ObjectMapper().writeValueAsString(result);
-                simpMessagingTemplate.convertAndSendToUser(result.surrenderPlayerSessionId(),
-                                "/queue/specific-user", resultJSON);
-                simpMessagingTemplate.convertAndSendToUser(result.winPlayerSessionId(),
-                                "/queue/specific-user", resultJSON);
+                String roomId = data.roomId();
+                if (roomSurrenderFix.containsKey(roomId)) {
+                        SurrenderResult result = gameService.surrender(roomId, sessionId);
+                        String resultJSON = new ObjectMapper().writeValueAsString(result);
+                        simpMessagingTemplate.convertAndSendToUser(result.surrenderPlayerSessionId(),
+                                        "/queue/specific-user", resultJSON);
+                        simpMessagingTemplate.convertAndSendToUser(result.winPlayerSessionId(),
+                                        "/queue/specific-user", resultJSON);
+                        roomSurrenderFix.remove(roomId);
+                }
         }
 }
