@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 
 @ExcludeFromJacocoGeneratedReport
-@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Can't fix that for now")
+@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "JaCoCo treats records as bugs")
 public record Result(Event event,
                 Cells cells,
                 ShipCells shipCells,

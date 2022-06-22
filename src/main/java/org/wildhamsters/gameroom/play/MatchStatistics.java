@@ -44,7 +44,7 @@ class MatchStatistics {
             rounds++;
     }
 
-    void setFinishTime() {
+    void adjustFinishTime() {
         finishTime = LocalDateTime.now();
     }
 

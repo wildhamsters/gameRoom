@@ -11,7 +11,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 )
 class MatchResult {
 
-    // TODO  winner's left fleet
     private final String gameId;
     private final Player playerOne;
     private final Player playerTwo;

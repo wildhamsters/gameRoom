@@ -80,7 +80,7 @@ class SingleShot {
     }
 
     MatchStatistics getMatchStatistics() {
-        matchStatistics.setFinishTime();
+        matchStatistics.adjustFinishTime();
         return matchStatistics;
     }
 }

@@ -6,9 +6,6 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Component;
 import org.wildhamsters.gameroom.fleet.ShipsPositions;
 
-//TODO board is hardcoded to be of size 100. Change it whole application supports it.
-// Change representation to map.
-
 /**
  * @author Dominik Żebracki
  */

@@ -1,13 +1,13 @@
 package org.wildhamsters.gameroom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.wildhamsters.gameroom.configuration.GameConfigurer;
 import org.wildhamsters.gameroom.play.GameRoom;
 import org.wildhamsters.gameroom.play.GameRooms;
 import org.wildhamsters.gameroom.play.Statistics;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main entry point to the game.
@@ -32,9 +32,7 @@ class GameService {
     GameService() {
         this.gameRoom = null;
         this.connectedPlayers = new ConnectedPlayers(new ArrayList<>());
-//        this.gameConfigurer = new GameConfigurer("http://shipplacement:7000/placeShips");
-        this.gameConfigurer = new GameConfigurer("http://localhost:7000/placeShips");
-        // "https://protected-stream-19238.herokuapp.com/placeShips");
+        this.gameConfigurer = new GameConfigurer("http://shipplacement:7000/placeShips");
         this.statistics = new Statistics();
     }
 

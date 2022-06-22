@@ -5,19 +5,20 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href="https://img.icons8.com/external-justicon-flat-justicon/344/external-ship-pirates-justicon-flat-justicon.png"
           rel="shortcut icon">
-    <link href="css/index.css" rel="stylesheet">
+    <link href="css/game.css" rel="stylesheet">
+    <link href="css/normalize.css" rel="stylesheet">
     <title>BATTLESHIPS GAME</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script defer src="js/index.js"></script>
+    <script defer src="js/game.js"></script>
 </head>
 <body>
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
     enabled. Please enable Javascript and reload this page!</h2></noscript>
 
+    <!-- onclick="location.href='/logout'" -->
 <div id="menu">
-    <button id="logout" onclick="location.href='/logout'">LOGOUT</button>
     <button id="giveUp" onclick="giveUp()">Give up</button>
     <span id="name"></span>
 </div>
@@ -54,6 +55,5 @@
 		<a href="https://mixkit.co/license/#sfxFree">Sound license</a>
 	</span>
 </p>
-
 </body>
 </html>
