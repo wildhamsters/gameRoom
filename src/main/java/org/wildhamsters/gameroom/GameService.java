@@ -1,13 +1,16 @@
 package org.wildhamsters.gameroom;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.wildhamsters.gameroom.configuration.GameConfigurer;
+import org.wildhamsters.gameroom.configuration.PositionsDTO;
 import org.wildhamsters.gameroom.play.GameRoom;
 import org.wildhamsters.gameroom.play.GameRooms;
 import org.wildhamsters.gameroom.play.Statistics;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Main entry point to the game.
@@ -24,15 +27,18 @@ class GameService {
     private static final int BOARD_HEIGHT = 10;
 
     private final GameRooms gameRooms = new GameRooms();
-    private final GameConfigurer gameConfigurer;
     private final Statistics statistics;
     private GameRoom gameRoom;
     private ConnectedPlayers connectedPlayers;
+    private final AtomicBoolean isResponseWithShipsReady;
+    private ConnectionStatus connectionStatus;
+    private final GameConfigurer gameConfigurer;
 
-    GameService() {
+    GameService(GameConfigurer gameConfigurer) {
+        this.gameConfigurer = gameConfigurer;
         this.gameRoom = null;
+        this.isResponseWithShipsReady = new AtomicBoolean(false);
         this.connectedPlayers = new ConnectedPlayers(new ArrayList<>());
-        this.gameConfigurer = new GameConfigurer("http://shipplacement:7000/placeShips");
         this.statistics = new Statistics();
     }
 
@@ -52,6 +58,10 @@ class GameService {
         }
     }
 
+    boolean areTwoPlayersConnected() {
+        return connectedPlayers.areBothConnected();
+    }
+
     /**
      * @param position of a shot on the board.
      * @return result of the shot.
@@ -65,7 +75,7 @@ class GameService {
         return result;
     }
 
-    private ConnectionStatus createPlayerWaitingForOpponentStatus() {
+    ConnectionStatus createPlayerWaitingForOpponentStatus() {
         return new ConnectionStatus("No opponents for now",
                 null,
                 connectedPlayers.firstOneConnected().sessionId(), null,
@@ -74,11 +84,16 @@ class GameService {
                 null, Event.CONNECT);
     }
 
+    void addPlayer(ConnectedPlayer connectedPlayer) {
+        connectedPlayers = connectedPlayers.add(connectedPlayer);
+    }
+
     private ConnectionStatus createTwoPlayersConnectedStatus() {
         var gameSettings = gameConfigurer.createConfiguration(SHIP_SIZES_TO_BE_CREATED,
                 BOARD_HEIGHT, BOARD_WIDTH, connectedPlayers.names(), connectedPlayers.ids());
         this.gameRoom = new GameRoom(gameSettings);
         var roomId = gameRooms.addRoom(gameRoom);
+
         var connectionStatus = new ConnectionStatus("Players paired.",
                 roomId,
                 connectedPlayers.firstOneConnected().sessionId(),
@@ -89,13 +104,42 @@ class GameService {
                 connectedPlayers.firstOneConnected().name(),
                 connectedPlayers.secondOneConnected().name(),
                 Event.CONNECT);
-
-        Logger.log(Log.Level.INFO, this.getClass(), "Players  %s | %s  started new game in room %s.".formatted(
-                connectedPlayers.firstOneConnected().name(), connectedPlayers.secondOneConnected().name(),
-                roomId));
-
         clearConnectedPlayersAfterPairing();
         return connectionStatus;
+    }
+
+    void createTwoPlayersConnectedStatus(PositionsDTO shipsPositions) {
+        var gameSettings = gameConfigurer.createConfiguration(shipsPositions,
+                SHIP_SIZES_TO_BE_CREATED,
+                BOARD_HEIGHT, BOARD_WIDTH, connectedPlayers.names(), connectedPlayers.ids());
+        this.gameRoom = new GameRoom(gameSettings);
+        var roomId = gameRooms.addRoom(gameRoom);
+
+        var connectionStatus = new ConnectionStatus("Players paired.",
+                roomId,
+                connectedPlayers.firstOneConnected().sessionId(),
+                gameSettings.firstPlayersFleet().getFleetPositions(),
+                connectedPlayers.secondOneConnected().sessionId(),
+                gameSettings.secondPlayersFleet().getFleetPositions(),
+                connectedPlayers.firstOneConnected().name(),
+                connectedPlayers.firstOneConnected().name(),
+                connectedPlayers.secondOneConnected().name(),
+                Event.CONNECT);
+        clearConnectedPlayersAfterPairing();
+        this.connectionStatus = connectionStatus;
+        this.isResponseWithShipsReady.set(true);
+    }
+
+    ConnectionStatus getConnectionStatus() {
+        while (!isResponseWithShipsReady.get()) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        isResponseWithShipsReady.set(false);
+        return this.connectionStatus;
     }
 
     private void clearConnectedPlayersAfterPairing() {
